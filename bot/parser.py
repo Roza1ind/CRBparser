@@ -19,21 +19,21 @@ class CurrencyParser:
                 currencies = {}
 
                 for valute in soup.find_all('Valute'):
-                    # 🔹 Получаем ТЕГИ (объекты BeautifulSoup)
+                    
                     char_code_tag = valute.find('CharCode')
                     name_tag = valute.find('Name')
                     value_tag = valute.find('Value')
                     nominal_tag = valute.find('Nominal')
 
-                    # 🔹 Проверяем, что все теги существуют
+                    
                     if char_code_tag and name_tag and value_tag and nominal_tag:
-                        # 🔹 Теперь получаем ТЕКСТ из тегов
+                        
                         char_code = char_code_tag.text
                         name = name_tag.text
                         value_str = value_tag.text.replace(',', '.')
                         nominal_str = nominal_tag.text
 
-                        # 🔹 Сохраняем данные
+                        
                         currencies[char_code] = {
                             'name': name,
                             'value': float(value_str),
