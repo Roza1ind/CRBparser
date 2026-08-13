@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import json
 
 class CurrencyParser:
      
@@ -15,33 +16,41 @@ class CurrencyParser:
             response.encoding = 'windows-1251'
 
             if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'lxml-xml')
-                currencies = {}
+                soup = BeautifulSoup(response.content, 'lxml-xml')
 
+                currencies = {}
+                
                 for valute in soup.find_all('Valute'):
-                    # 🔹 Получаем ТЕГИ (объекты BeautifulSoup)
+                    
                     char_code_tag = valute.find('CharCode')
                     name_tag = valute.find('Name')
                     value_tag = valute.find('Value')
                     nominal_tag = valute.find('Nominal')
 
-                    # 🔹 Проверяем, что все теги существуют
+                    
                     if char_code_tag and name_tag and value_tag and nominal_tag:
-                        # 🔹 Теперь получаем ТЕКСТ из тегов
+                        
                         char_code = char_code_tag.text
                         name = name_tag.text
                         value_str = value_tag.text.replace(',', '.')
                         nominal_str = nominal_tag.text
 
-                        # 🔹 Сохраняем данные
+                        
                         currencies[char_code] = {
                             'name': name,
                             'value': float(value_str),
                             'nominal': int(nominal_str)
                         }
 
-                self.last_update = datetime.now()
-                self.cache = currencies
+                        json_courses = {
+                            'date': datetime.now().strftime('%d.%m.%Y %H:%M'),
+                            'currencies': currencies
+                                        }
+                        with open("json_courses.json", "w", encoding='utf-8') as c:
+                            json.dump(json_courses, c, ensure_ascii=False, indent=4)
+
+                # self.last_update = datetime.now()
+                # self.cache = currencies
                 return currencies    
             
         except Exception as e:
